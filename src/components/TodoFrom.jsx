@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { createTodo, getTodo, deleteTodo, updateTodo } from '../api/todoApi'
+import List from './List'
+import { useContext } from 'react'
+import { TodoContext } from '../context/todoContext'
 const TodoFrom = () => {
-
+  const todoCtx=useContext(TodoContext)
   const [todoText, setTodoText] = useState('')
-  const [todos, setTodos] = useState([])
   const [editId, setEditId] = useState(null)
   const input=useRef(null);
   useEffect(() => {
@@ -12,7 +14,7 @@ const TodoFrom = () => {
 
   const fetchTodo = async () => {
     const data = await getTodo();
-    setTodos(data)
+    todoCtx.addFunc(data)
   }
   const handleTodo = () => {
     editId ?handleUpdateTodoList() :handleAddTodo()
@@ -51,8 +53,8 @@ const TodoFrom = () => {
     }
   }
   return (
-    <div className="container mt-5 " >
-      <h2 className="text-center mb-4" >✅ Todo App</h2>
+    <div className="max-w-100 mx-auto mt-5 " >
+      <h1  className="text-center mb-4" > Todo App</h1>
 
       {/* Input + Button */}
       <div className="input-group mb-3">
@@ -64,29 +66,14 @@ const TodoFrom = () => {
           onChange={handleGetTodo}
           ref={input}
         />
-        <button className="btn btn-primary" onClick={handleTodo}>
+        <button className="bg-white todo-list px-2 font-semibold rounded-e" onClick={handleTodo}>
           {editId ? "update" : "add"}
         </button>
       </div>
 
       {/* Task List */}
-      <ul className="list-group">
-        {todos.map((item, ind) => <li key={ind}
-          className="list-group-item d-flex justify-content-between align-items-center"
-        >
-          <span className='fs-6 text-truncate '>
-            {item.title}
-          </span>
-          <div className='d-flex flex-nowrap'>
-            <button onClick={() => handleUpdate(item)} className="btn btn-sm btn-success me-2">
-              Update
-            </button>
-            <button onClick={() => handleDelete(item._id)} className="btn btn-sm btn-outline-danger">
-              ❌
-            </button>
-          </div>
-        </li>)}
-      </ul>
+       <h3 className='text-sm '>Today tasks</h3>
+     <List todos={todoCtx.todo} />
     </div>
   )
 }
